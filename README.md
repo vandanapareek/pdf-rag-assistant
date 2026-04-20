@@ -18,10 +18,8 @@ This is a beginner-friendly RAG (Retrieval-Augmented Generation) project:
 
 Markdown example:
 
-```md
 ![Home screen](docs/screenshots/home.png)
 ![Q&A result](docs/screenshots/qa-result.png)
-```
 
 ---
 
