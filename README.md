@@ -13,11 +13,6 @@ This is a beginner-friendly RAG (Retrieval-Augmented Generation) project:
 
 ## Screenshots
 
-- `docs/screenshots/home.png`
-- `docs/screenshots/qa-result.png`
-
-Markdown example:
-
 ![Home screen](docs/screenshots/home.png)
 ![Q&A result](docs/screenshots/qa-result.png)
 
