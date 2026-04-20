@@ -1,11 +1,27 @@
 ## RAG PDF Chat (learning project)
 
+Live demo: [https://brilliant-tapioca-9a03b8.netlify.app/](https://brilliant-tapioca-9a03b8.netlify.app/)
+
 This is a beginner-friendly RAG (Retrieval-Augmented Generation) project:
 
 - Upload a **PDF**
 - The backend extracts text, chunks it, embeds it, and stores vectors in **FAISS**
 - You select a document and ask questions; answers are generated using only retrieved context
-- The UI also shows **sources (page + preview)** and some retrieval/debug metrics
+- The UI returns concise answers in a simple chat-like interface
+
+---
+
+## Screenshots
+
+- `docs/screenshots/home.png`
+- `docs/screenshots/qa-result.png`
+
+Markdown example:
+
+```md
+![Home screen](docs/screenshots/home.png)
+![Q&A result](docs/screenshots/qa-result.png)
+```
 
 ---
 
