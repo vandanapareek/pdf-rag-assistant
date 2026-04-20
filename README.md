@@ -6,8 +6,8 @@ This is a beginner-friendly RAG (Retrieval-Augmented Generation) project:
 
 - Upload a **PDF**
 - The backend extracts text, chunks it, embeds it, and stores vectors in **FAISS**
-- You select a document and ask questions; answers are generated using only retrieved context
-- The UI returns concise answers in a simple chat-like interface
+- You select a document and ask questions, answers are generated using only retrieved context.
+- The UI returns concise answers in a simple chat-like interface.
 
 ---
 
@@ -50,9 +50,10 @@ python -m venv venv
 
 Backend endpoints:
 
-- `POST /upload` (multipart form upload of a PDF)
-- `GET /documents` (list available processed docs)
-- `POST /ask` (JSON: `{ "q": "...", "doc_id": "..." }`)
+- `POST /upload` - Upload a PDF (`multipart/form-data`, field name: `file`)
+- `GET /documents` - List available processed documents
+- `POST /ask` - Ask a question for a selected doc (`JSON: { "q": "...", "doc_id": "..." }`)
+- `DELETE /documents/{doc_id}` - Delete a document, its PDF, and its FAISS index
 
 ---
 
