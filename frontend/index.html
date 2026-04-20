@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chat with Documents</title>
+    <style>
+        :root {
+            --bg1: #f8fafc;
+            --bg2: #eef4ff;
+            --panel: rgba(255, 255, 255, 0.9);
+            --panel2: #f8fbff;
+            --text: #172033;
+            --muted: #5f6b85;
+            --border: rgba(99, 115, 129, 0.18);
+            --shadow: 0 14px 34px rgba(76, 96, 130, 0.14);
+            --primary: #6366f1;
+            --primary2: #14b8a6;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(1200px 600px at 15% 10%, rgba(99, 102, 241, 0.14), transparent 60%),
+                radial-gradient(900px 500px at 90% 20%, rgba(20, 184, 166, 0.12), transparent 55%),
+                linear-gradient(180deg, var(--bg1), var(--bg2));
+            min-height: 100vh;
+            font-size: 17px;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 18px 32px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            padding: 6px 2px 18px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 30px;
+            letter-spacing: -0.01em;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            backdrop-filter: blur(6px);
+        }
+
+        h3 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+            color: var(--text);
+            letter-spacing: 0.01em;
+        }
+
+        button {
+            border: 1px solid rgba(99, 102, 241, 0.18);
+            background: linear-gradient(135deg, var(--primary), var(--primary2));
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: transform 0.05s ease, filter 0.15s ease;
+        }
+
+        button:hover {
+            filter: brightness(1.05);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .section-gap {
+            margin-top: 14px;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .file {
+            width: 100%;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            background: var(--panel2);
+            color: var(--muted);
+        }
+
+        .file input[type="file"] {
+            width: 100%;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .docList {
+            margin-top: 10px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: auto;
+            background: rgba(255, 255, 255, 0.62);
+            max-height: 52vh;
+        }
+
+        .doc {
+            cursor: pointer;
+            padding: 13px 14px;
+            border-bottom: 1px solid rgba(99, 115, 129, 0.12);
+            color: var(--text);
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        .doc .docName {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .doc .dangerBtn {
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            background: rgba(239, 68, 68, 0.08);
+            color: #b91c1c;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .doc .dangerBtn:hover {
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        .doc:last-child {
+            border-bottom: none;
+        }
+
+        .doc:hover {
+            background: rgba(99, 102, 241, 0.09);
+        }
+
+        .doc .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.9);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+        }
+
+        .doc.selected {
+            background: rgba(99, 102, 241, 0.14);
+            border-left: 3px solid rgba(99, 102, 241, 0.9);
+            padding-left: 11px;
+        }
+
+        .chatTitle {
+            margin-bottom: 8px;
+        }
+
+        .questionRow {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 220px;
+            padding: 13px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #ffffff;
+            color: var(--text);
+            outline: none;
+            font-size: 16px;
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(95, 107, 133, 0.8);
+        }
+
+        input[type="text"]:focus {
+            border-color: rgba(99, 102, 241, 0.45);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+        }
+
+        #answer {
+            margin-top: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            background: #ffffff;
+            white-space: pre-wrap;
+            color: var(--text);
+            min-height: 90px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .docList {
+                max-height: 34vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="topbar">
+            <h2>Chat with your Documents</h2>
+            <p class="subtitle">Upload a file, select a document, and ask questions.</p>
+        </div>
+
+        <div class="container">
+            <!-- LEFT SIDE -->
+            <div class="card left">
+                <h3>Upload File</h3>
+                <div class="file">
+                    <input type="file" id="fileInput" />
+                </div>
+                <div class="section-gap">
+                    <button id="uploadBtn" type="button" onclick="upload()">Upload</button>
+                </div>
+                <div id="uploadStatus" class="hint"></div>
+
+                <div class="section-gap">
+                    <h3>Documents</h3>
+                    <div class="docList" id="docList"></div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDE -->
+            <div class="card right">
+                <h3 class="chatTitle" id="selectedDoc">Select a document</h3>
+                <div class="questionRow">
+                    <input type="text" id="question" placeholder="Ask something..." />
+                    <button id="askBtn" type="button" onclick="ask()">Ask</button>
+                </div>
+                <div class="hint">Tip: After uploading, your documents will appear in the list.</div>
+                <div id="answer">Answer will show up here.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8004";
+        let selectedDocId = null;
+
+        async function readErrorMessage(res, fallbackMessage) {
+            try {
+                const data = await res.json();
+                return data.detail || fallbackMessage;
+            } catch (e) {
+                return fallbackMessage;
+            }
+        }
+
+        // Load documents
+        async function loadDocuments() {
+            const list = document.getElementById("docList");
+            list.innerHTML = `<div class="doc" style="cursor: default; color: var(--muted);">Loading documents...</div>`;
+
+            try {
+                const res = await fetch(`${API_BASE}/documents`);
+                if (!res.ok) {
+                    const message = await readErrorMessage(res, "Failed to load documents");
+                    throw new Error(message);
+                }
+
+                const docs = await res.json();
+                list.innerHTML = "";
+
+                if (!Array.isArray(docs) || docs.length === 0) {
+                    list.innerHTML = `<div class="doc" style="cursor: default; color: var(--muted);">No documents yet. Upload a PDF to get started.</div>`;
+                    return;
+                }
+
+                docs.forEach(doc => {
+                    const div = document.createElement("div");
+                    div.className = "doc";
+                    div.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="docName">${doc.name}</span>`;
+
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.type = "button";
+                    deleteBtn.className = "dangerBtn";
+                    deleteBtn.innerText = "Delete";
+                    deleteBtn.onclick = async (e) => {
+                        e.stopPropagation();
+                        const ok = confirm(`Delete "${doc.name}"? This removes the PDF and its index.`);
+                        if (!ok) return;
+
+                        try {
+                            const delRes = await fetch(`${API_BASE}/documents/${doc.doc_id}`, { method: "DELETE" });
+                            if (!delRes.ok) {
+                                const message = await readErrorMessage(delRes, "Delete failed");
+                                throw new Error(message);
+                            }
+
+                            if (selectedDocId === doc.doc_id) {
+                                selectedDocId = null;
+                                document.getElementById("selectedDoc").innerText = "Select a document";
+                                document.getElementById("answer").innerText = "Answer will show up here.";
+                            }
+
+                            loadDocuments();
+                        } catch (err) {
+                            alert(err.message || "Delete failed");
+                        }
+                    };
+                    div.appendChild(deleteBtn);
+
+                    div.onclick = () => {
+                        selectedDocId = doc.doc_id;
+                        document.getElementById("selectedDoc").innerText = "Selected: " + doc.name;
+
+                        // Visual selection highlight
+                        document.querySelectorAll(".doc.selected").forEach(el => el.classList.remove("selected"));
+                        div.classList.add("selected");
+                    };
+
+                    list.appendChild(div);
+                });
+            } catch (e) {
+                list.innerHTML = `<div class="doc" style="cursor: default; color: var(--muted);">Error: ${e.message || "Failed to load documents"}</div>`;
+            }
+        }
+
+        // Upload file
+        async function upload() {
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+            const uploadStatusEl = document.getElementById("uploadStatus");
+
+            if (!file) {
+                alert("Choose a file first");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const uploadBtn = document.getElementById("uploadBtn");
+            uploadBtn.disabled = true;
+            uploadStatusEl.innerText = "Uploading...";
+            try {
+                const res = await fetch(`${API_BASE}/upload`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    const message = await readErrorMessage(res, "Upload failed");
+                    throw new Error(message);
+                }
+
+                const data = await res.json();
+                const m = data.metrics;
+                if (m) {
+                    uploadStatusEl.innerText =
+                        `Done. bytes=${m.bytes}, save=${m.save_ms}ms, pdf_load=${m.pdf_load_ms}ms, index=${m.index_ms}ms, total=${m.total_ms}ms`;
+                } else {
+                    uploadStatusEl.innerText = "Uploaded.";
+                }
+                loadDocuments();
+            } catch (e) {
+                uploadStatusEl.innerText = "";
+                alert(e.message || "Upload failed");
+            } finally {
+                uploadBtn.disabled = false;
+            }
+        }
+
+        // Ask question
+        async function ask() {
+            const askBtn = document.getElementById("askBtn");
+            const answerEl = document.getElementById("answer");
+            const q = document.getElementById("question").value.trim();
+
+            if (!selectedDocId) {
+                alert("Select a document first");
+                return;
+            }
+
+            if (!q) {
+                alert("Type a question first");
+                return;
+            }
+
+            askBtn.disabled = true;
+            answerEl.innerText = "Thinking...";
+            try {
+                const res = await fetch(`${API_BASE}/ask`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ q: q, doc_id: selectedDocId })
+                });
+
+                if (!res.ok) {
+                    const message = await readErrorMessage(res, "Failed to get answer");
+                    throw new Error(message);
+                }
+
+                const data = await res.json();
+                answerEl.innerText = data.answer ?? "";
+            } catch (e) {
+                answerEl.innerText = e.message || "Request failed. Check that the backend is running.";
+            } finally {
+                askBtn.disabled = false;
+            }
+        }
+
+        document.getElementById("question").addEventListener("keydown", (e) => {
+            if (e.key !== "Enter") return;
+            e.preventDefault();
+            ask();
+        });
+
+        // Initial load
+        loadDocuments();
+    </script>
+
+</body>
+
+</html>

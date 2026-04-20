@@ -1,0 +1,28 @@
+### Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+### Virtual environments
+venv/
+.venv/
+
+### OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+### Env files / secrets
+.env
+
+### Local app data (RAG artifacts)
+data/*.pdf
+data/documents.json
+data/faiss_*/
+data/upload_*.pdf
+
